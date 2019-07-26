@@ -1,0 +1,182 @@
+<div class="buy">
+  <div
+    v-loading="loading"
+    element-loading-text="努力載入中..."
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255,255,255, 0.5)"
+    :class="loading== true?'py-5':''"
+  ></div>
+  <div v-if="!loading && !done" class="register mx-2 my-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          <b
+            ><i class="el-icon-shopping-cart-2" aria-hidden="true"></i>
+            {{ productData.name }} 訂購單</b
+          >
+        </h5>
+        <form>
+          <img :src="productData.img" class="rounded shadow img-fluid" />
+
+          <h4 class="mt-4">
+            <b><i class="el-icon-bank-card" aria-hidden="true"></i> 匯款資訊</b>
+          </h4>
+          <small>
+            <p v-for="text in bankInfoList">{{ text }}</p>
+          </small>
+          <hr />
+          <h4 class="mt-4">
+            <b><i class="el-icon-postcard" aria-hidden="true"></i> 訂購資訊</b>
+          </h4>
+          <small>
+            <p v-for="text in buyNeedKnowList">
+              {{ text }}
+            </p>
+          </small>
+          <div class="form-group">
+            <label for="inputCount">
+              <b>件數</b>
+            </label>
+            <div class="row">
+              <div class="col-12">
+                <el-input-number
+                  v-model="buyListData.count"
+                  :min="1"
+                  label="請輸入訂購數量"
+                ></el-input-number>
+              </div>
+            </div>
+          </div>
+
+          <span class="" v-if="buyListData.count!=undefined"
+            >$ {{ buyListData.count * productData.price }} 元</span
+          >
+          <p></p>
+          <div class="form-group">
+            <label for="inputCount"><b>運費</b></label>
+            <div v-if="buyListData.count>productData.freeShipping-1">
+              <S>
+                <span v-if="buyListData.count!=undefined"
+                  >$
+                  {{ buyListData.count * productData.ShippingPrice }} 元</span
+                >
+              </S>
+              <H4 class="text-danger">免運</H4>
+            </div>
+            <div v-else>
+              <span v-if="buyListData.count!=undefined"
+                >$ {{ buyListData.count * productData.ShippingPrice }} 元</span
+              >
+            </div>
+            <p></p>
+            <div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    優惠卷
+                  </div>
+                </div>
+                <el-select
+                  v-model="chooseDiscountValue"
+                  id="inputGroupSelect01"
+                >
+                  <el-option selected label="不使用" value="不使用"></el-option>
+                  <el-option
+                    v-for="(dis,index) in myDiscounts"
+                    :value="index"
+                    :label=" dis.value"
+                  ></el-option>
+                </el-select>
+              </div>
+            </div>
+            <div class="text-right">
+              <h5>
+                共：$
+                {{ money - useDiscount }}
+              </h5>
+            </div>
+          </div>
+          <hr />
+          <h4>
+            <b><i class="el-icon-user-solid" aria-hidden="true"></i> 訂購人</b>
+          </h4>
+          <div>
+            <p></p>
+            <p>姓名：{{ myInfo.name }}</p>
+            <p>連絡電話：{{ myInfo.phone }}</p>
+            <p>通訊地址：{{ myInfo.address }}</p>
+            <p>
+              訂購人與寄件人：<el-switch
+                v-model="getter.isSameWithBuyer"
+                active-text=" 相同"
+                inactive-text="不相同"
+              >
+              </el-switch>
+            </p>
+          </div>
+
+          <hr />
+          <h4>
+            <b><i class="el-icon-user" aria-hidden="true"></i> 收件人</b>
+          </h4>
+
+          <div>
+            <div class="form-group">
+              <label for="inputUserName2">姓名</label>
+              <input
+                v-model="getter.name"
+                type="text"
+                class="form-control"
+                id="inputUserName2"
+                placeholder="請輸入收件人姓名"
+              />
+            </div>
+            <div class="form-group">
+              <label for="inputPhone2">聯絡電話</label>
+              <input
+                v-model="getter.phone"
+                type="text"
+                class="form-control"
+                id="inputPhone2"
+                placeholder="請輸入收件人聯絡電話"
+              />
+            </div>
+            <div class="form-group">
+              <label for="inputAddress">收件人地址</label>
+              <input
+                v-model="getter.address"
+                type="text"
+                class="form-control"
+                id="inputAddress2"
+                placeholder="請輸入收件人地址"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="inputNote">寄件備註</label>
+              <input
+                v-model="getter.note"
+                type="text"
+                class="form-control"
+                id="inputNote2"
+                placeholder="寄件備註"
+              />
+            </div>
+
+            <a
+              href="javascript:;"
+              v-if="getter.name != '' && getter.phone != '' && getter.address != ''"
+              @click="buyHandler()"
+              class="btn btn-warning btn-block "
+            >
+              送出
+            </a>
+            <button v-else class=" btn btn-warning btn-block " disabled>
+              送出
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

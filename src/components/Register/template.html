@@ -1,0 +1,119 @@
+<div class="register">
+  <el-container
+    v-loading="loading"
+    element-loading-text="努力載入中..."
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255,255,255, 0.5)"
+    class="py-5"
+  >
+    <el-main>
+      <span v-if="$route.params.note" class="my-3"
+        ><i class="el-icon-s-promotion"></i> {{ $route.params.note }}</span
+      >
+      <el-row
+        style=" box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);background-color: #FFFFFF;border-radius: 4px"
+      >
+        <el-col :span="20" :offset="2">
+          <el-form v-if="!loading" :model="form" label-width="80px">
+            <p></p>
+            <el-form-item
+              label="姓名"
+              prop="name"
+              :rules="[{ required: true, message: '姓名不能為空', trigger: 'blur'}]"
+            >
+              <el-input
+                type="text"
+                v-model="form.name"
+                clearable
+                autocomplete="off"
+              ></el-input>
+            </el-form-item>
+            <el-form-item
+              label="出生日期"
+              prop="birthday"
+              :rules="[{ required: true, message: '出生日期不能為空', trigger: 'blur'}]"
+            >
+              <el-date-picker
+                style="width: 100%"
+                type="date"
+                value-format="yyyy-MM-dd"
+                format="MM月dd日"
+                suffix-icon="el-icon-date"
+                v-model="form.birthday"
+                clearable
+                autocomplete="off"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item
+              label="連絡電話"
+              prop="phone"
+              :rules="[{ required: true, message: '連絡電話不能為空', trigger: 'blur'}]"
+            >
+              <el-input
+                type="text"
+                v-model="form.phone"
+                clearable
+                autocomplete="off"
+              ></el-input>
+            </el-form-item>
+            <el-form-item
+              label="電子信箱"
+              prop="email"
+              :rules="[{ required: true, message: '電子信箱不能為空', trigger: 'blur'}]"
+            >
+              <el-input
+                type="text"
+                v-model="form.email"
+                clearable
+                autocomplete="off"
+              ></el-input>
+            </el-form-item>
+            <el-form-item
+              :rules="[{ required: true, message: '連絡地址不能為空', trigger: 'blur'}]"
+              prop="address.value"
+              label="聯繫地址"
+            >
+              <span>縣市/區</span>
+              <br />
+              <el-cascader
+                :props="form.address.addressList"
+                v-model="form.address.values"
+              ></el-cascader>
+              <br />
+              <span>詳細地址</span>
+              <el-input
+                placeholder="請輸入詳細地址"
+                v-model="form.address.value"
+                ref="addressInputRef"
+                clearable
+              >
+              </el-input>
+            </el-form-item>
+            <el-form-item v-if="$route.query.recLineId" label="推薦人">
+              <h5 class="mt-2">
+                <b>{{ form.recper.name }}</b>
+              </h5>
+            </el-form-item>
+            <div>
+              <el-button
+                v-if="!canSent"
+                disabled
+                :loading="false"
+                class="btn btn-warning btn-block"
+                >註冊</el-button
+              >
+              <el-button
+                v-else
+                class="btn btn-warning btn-block"
+                :loading="false"
+                @click="registerHandler"
+                >加入並註冊</el-button
+              >
+            </div>
+            <p></p>
+          </el-form>
+        </el-col>
+      </el-row>
+    </el-main>
+  </el-container>
+</div>

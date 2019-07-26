@@ -1,0 +1,132 @@
+<div class="confirmMoneyIn">
+  <div
+    v-loading="loading"
+    element-loading-text="努力載入中..."
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255,255,255, 0.5)"
+    :class="loading?'py-5':''"
+  ></div>
+  <div v-if="!loading">
+    <div :class="$route.query.id?'d-none':'d-block'">
+      <div id="topOptions" class="mx-3">
+        <div class="animated slideInUp my-3 card shadow-lg rounded">
+          <div class="card-body">
+            <el-form class="demo-form-inline">
+              <el-form-item label="訂單查詢">
+                <el-input
+                  clearable
+                  v-model="searchText"
+                  placeholder="訂單查詢"
+                ></el-input>
+              </el-form-item>
+            </el-form>
+            <el-checkbox
+              v-model="checkAll"
+              @change="handleCheckAllChange"
+              :checked="true"
+              :indeterminate="checked.length < fruits.length + 4 && checked.length>0"
+              label="全選"
+            ></el-checkbox>
+            <div @click="showCheck = !showCheck">
+              <el-divider>
+                <i v-if="!showCheck" class="el-icon-arrow-down"></i>
+                <i v-else class="el-icon-arrow-up"></i>
+              </el-divider>
+            </div>
+
+            <el-form label-width="80px">
+              <div :class="showCheck?'d-block':'d-none'">
+                <el-form-item class=" py-0" label="狀態">
+                  <el-checkbox-group v-model="checked">
+                    <el-checkbox
+                      :checked="true"
+                      v-for="fruit in fruits"
+                      :label="fruit"
+                      class=" py-0"
+                    ></el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+
+                <el-form-item class=" py-0" label="產品">
+                  <el-checkbox-group v-model="checked">
+                    <el-checkbox
+                      :checked="false"
+                      v-for="staut in stauts"
+                      :label="staut"
+                    ></el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </div>
+            </el-form>
+          </div>
+        </div>
+      </div>
+      <span class="ml-3" v-if="searchNum>0">
+        搜尋成功：共{{ searchNum }}筆</span
+      >
+      <span class="ml-3" v-else> 搜尋失敗，沒有符合的關鍵字</span>
+    </div>
+
+    <div
+      v-loading="!showCard"
+      element-loading-text="努力載入中..."
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(255,255,255, 0.5)"
+      :class="!showCard?'py-5':''"
+    ></div>
+    <div v-if="showCard" class="showCards mx-3 ">
+      <div
+        v-if="itemShow(i)"
+        v-for="i in allBuyList"
+        class="my-3 card shadow-lg rounded"
+      >
+        <div class="card-body">
+          <div>
+            <h4>
+              <b v-if="i.stauts == '已付款，核實中'">已付款，需管理員審核</b>
+              <b v-if="i.stauts == '水果準備中'">已付款，等待工廠出貨</b>
+            </h4>
+            <p>訂單編號：{{ i.id }}</p>
+            <p>訂單名稱：{{ i.productName }}</p>
+            <p>帳號後五碼：{{ i.cardLast5Num }}</p>
+            <p>訂單件數：{{ i.count }}</p>
+            <p>付款金額：{{ i.money }}</p>
+            <p>訂單時間：{{ i.time }}</p>
+            <p v-if="i.stauts == '水果準備中'">繳費狀態：已付款</p>
+            <p v-if="i.stauts == '尚未付款'">繳費狀態：尚未付款</p>
+            <p v-if="i.stauts == '已付款，核實中'">繳費狀態：已付款</p>
+            <p v-if="i.stauts == '出貨摟～'">繳費狀態：已付款</p>
+            <p>收件人姓名：{{ i.name }}</p>
+            <p>收件人電話：{{ i.phone }}</p>
+            <p>收件人住址：{{ i.address }}</p>
+            <p>訂單備註：{{ i.note == "undefined" ? "" : i.note }}</p>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div v-if="i.stauts == '已付款，核實中'">
+            <button
+              @click="getMoneyHandler(i.id)"
+              class="btn-block btn btn-warning mt-2"
+            >
+              確認款項已收到，並通知工廠出貨
+            </button>
+          </div>
+
+          <div v-if="i.stauts == '出貨摟～'">
+            <button
+              @click="productNotYetOutHandler(i.id)"
+              class="btn-block btn btn-danger mt-2"
+            >
+              註銷此訂單，狀態退回尚未出貨
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="$route.query.id">
+      <el-button @click="$route.query.id = false;searchText=''" type="info"
+        >查看完整訂單</el-button
+      >
+    </div>
+  </div>
+</div>

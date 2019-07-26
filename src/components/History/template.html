@@ -1,0 +1,170 @@
+<div class="history">
+  <div
+    class="animated slideInLeft btn-group btn-group-toggle pt-3"
+    data-toggle="buttons"
+  >
+    <button
+      @click="search=[];search.push('尚未付款')"
+      class="btn btn-secondary active"
+    >
+      <input
+        type="radio"
+        name="options"
+        id="option2"
+        autocomplete="off"
+        checked
+      />
+      未付款
+    </button>
+    <button
+      @click="search=[];search.push('已付款，核實中');search.push('水果準備中');search.push('出貨摟～');"
+      class="btn btn-secondary"
+    >
+      <input type="radio" name="options" id="option3" autocomplete="off" />
+      已付款
+    </button>
+    <button
+      @click="search=[];search.push('尚未付款');search.push('已付款，核實中');search.push('水果準備中')"
+      class="btn btn-secondary"
+    >
+      <input type="radio" name="options" id="option4" autocomplete="off" />
+      未出貨
+    </button>
+    <button
+      @click="search=[];search.push('出貨摟～')"
+      class="btn btn-secondary"
+    >
+      <input type="radio" name="options" id="option5" autocomplete="off" />
+      已出貨
+    </button>
+  </div>
+
+  <div
+    v-loading="loading"
+    element-loading-text="努力載入中..."
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255,255,255, 0.5)"
+    v-if="search.length!=0"
+    :class="myHistoryList == 'loading'?'py-5':''"
+  >
+    <div v-if="!loading && myHistoryList.length>0">
+      <div class="historyList mx-3 ">
+        <div
+          v-for="i in myHistoryList"
+          v-if="search.indexOf(i.stauts)!=-1"
+          class="animated slideInUp my-3 card shadow-lg rounded"
+        >
+          <div class="card-body">
+            <div
+              class="card mt-2"
+              @click="show='register'"
+              style=" cursor: pointer;"
+            >
+              <img :src="i.productInfo.img" class="card-img-top" />
+            </div>
+
+            <p></p>
+            <h4>
+              <b><i class="el-icon-box" aria-hidden="true"></i> 訂單資訊</b>
+            </h4>
+            <small>
+              <p>訂單編號：{{ i.id }}</p>
+              <p>訂單時間：{{ i.time }}</p>
+              <p>訂單名稱：{{ i.productName }}</p>
+              <p>訂單件數：{{ i.count }}</p>
+              <p>付款金額：{{ i.money }}</p>
+              <p v-if="i.stauts == '水果準備中'">繳費狀態：已付款</p>
+              <p v-if="i.stauts == '尚未付款'">繳費狀態：尚未付款</p>
+              <p v-if="i.stauts == '已付款，核實中'">繳費狀態：已付款</p>
+              <p v-if="i.stauts == '出貨摟～'">繳費狀態：已付款</p>
+
+              <p>收件人姓名：{{ i.name }}</p>
+              <p>收件人電話：{{ i.phone }}</p>
+              <p>收件人住址：{{ i.address }}</p>
+              <p>訂單備註：{{ i.note == 'undefined' ? '' : i.note }}</p>
+            </small>
+            <hr />
+
+            <div v-if="i.stauts == '尚未付款'">
+              <h4 class="mt-4">
+                <b
+                  ><i class="el-icon-bank-card" aria-hidden="true"></i>
+                  匯款資訊</b
+                >
+              </h4>
+              <p v-for='text in i.productInfo.bankInfo.split("\\n")'>
+                {{ text }}
+              </p>
+              <hr />
+              請輸入帳號後五碼
+              <p></p>
+              <el-input
+                v-model.number="cardLast5Num[i.id]"
+                type="number"
+                clearable
+              />
+              <button
+                disabled
+                v-if="cardLast5Num[i.id]==undefined || cardLast5Num[i.id] == ''"
+                class="btn-block btn btn-warning mt-2"
+              >
+                確定
+              </button>
+              <button
+                v-else
+                @click="cardLast5NumHandler(i.id,cardLast5Num[i.id],i.money, i.name )"
+                class="btn-block btn btn-warning mt-2"
+              >
+                確定
+              </button>
+            </div>
+            <div v-if="i.stauts == '已付款，核實中'">
+              核實中...
+              <p></p>
+              若有疑問煩請聯絡我們
+              <button
+                data-toggle="modal"
+                data-target="#exampleModal"
+                class="btn btn-warning mt-2"
+              >
+                聯絡資訊
+              </button>
+            </div>
+            <div v-if="i.stauts == '水果準備中'">
+              已核實，水果準備中...
+              <p></p>
+              若有疑問煩請聯絡我們
+              <button
+                class="btn btn-warning mt-2"
+                data-toggle="modal"
+                data-target="#exampleModal"
+              >
+                聯絡資訊
+              </button>
+            </div>
+            <div v-if="i.stauts == '出貨摟～'">
+              出貨摟～
+              <p></p>
+              若有疑問煩請聯絡我們
+              <button
+                data-toggle="modal"
+                data-target="#exampleModal"
+                class="btn btn-warning mt-2"
+              >
+                聯絡資訊
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="!loading && myHistoryList.length==0">
+      <div class="container">
+        尚未有訂單
+        <button @click="gotoMenu()" class="btn-block btn btn-warning mt-2">
+          點擊此處立即訂購
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

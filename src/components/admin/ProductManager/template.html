@@ -1,0 +1,78 @@
+<div class="productManager mt-3">
+  <div
+    v-loading="loading"
+    element-loading-text="努力載入中..."
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255,255,255, 0.5)"
+    :class="loading== true?'py-5':''"
+  ></div>
+  <div v-if="!loading">
+    <el-carousel
+      @change="getNowData"
+      :autoplay="false"
+      type="card"
+      :height="cardWidth"
+    >
+      <el-carousel-item v-for="item in productsInfo" :key="item.id">
+        <div
+          class="text-center"
+          v-if="item.name == undefined"
+          style="background-color: #99a9bf;"
+          :style="'width: '+picInCardWidth"
+        >
+          <h6 style="padding: 25%">尚未新增</h6>
+        </div>
+        <el-image
+          v-else
+          :src="item.img"
+          class="image"
+          :style="'width: '+picInCardWidth"
+        ></el-image>
+      </el-carousel-item>
+    </el-carousel>
+    <div
+      v-if="productsInfo[showProductIndex].name == undefined"
+      class="card mx-2"
+    >
+      <div class="card-body">
+        <h5 class="card-title">
+          商品資訊{{ productsInfo[showProductIndex].id + 1 }}
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          請新增
+        </h6>
+
+        <el-button
+          type="success"
+          @click="$router.push({ name: '產品上架', query: { id:productsInfo[showProductIndex].id }}) "
+          >新增</el-button
+        >
+      </div>
+    </div>
+    <div v-else class="card mx-2">
+      <div class="card-body">
+        <h5 class="card-title">
+          商品資訊{{ productsInfo[showProductIndex].id + 1 }}
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          {{ productsInfo[showProductIndex].name }}
+        </h6>
+        <div class="card-text">
+          <p>價格：{{ productsInfo[showProductIndex].price }}</p>
+          <p>運費/(盒)：{{ productsInfo[showProductIndex].ShippingPrice }}</p>
+          <p>
+            免運門檻：{{
+              productsInfo[showProductIndex].freeShipping
+            }}盒(含)以上
+          </p>
+        </div>
+        <el-button
+          type="success"
+          @click="$router.push({ name: '產品上架', params: { productsInfo:productsInfo[showProductIndex] }}) "
+          >編輯</el-button
+        >
+        <el-button type="danger">刪除</el-button>
+      </div>
+    </div>
+  </div>
+</div>

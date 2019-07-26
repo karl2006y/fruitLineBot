@@ -1,0 +1,101 @@
+<div>
+  <div
+    v-loading="loading"
+    element-loading-text="努力載入中..."
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255,255,255, 0.5)"
+    :class="loading== true?'py-5':''"
+  ></div>
+
+  <div v-if="!loading" class="uploadProduct">
+    商品資訊{{ id + 1 }}
+    <div class="card mx-3">
+      <div class="card-body">
+        <el-form label-width="35%">
+          <el-form-item label="產品名稱">
+            <el-input
+              placeholder="請輸入名稱"
+              v-model="name"
+              autosize
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="LINE上顯示名稱">
+            <el-input
+              placeholder="請輸入名稱"
+              v-model="lineName"
+              autosize
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="簡介內容">
+            <el-input
+              type="textarea"
+              :rows="5"
+              placeholder="請輸入內容"
+              v-model="lineInfo"
+              autosize
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="封面照片">
+            <ImgUploader
+              v-on:outData="getChildValue"
+              for="封面照片"
+              :orgImg="$route.params.productsInfo != undefined?$route.params.productsInfo.img:''"
+            ></ImgUploader>
+          </el-form-item>
+          <el-form-item label="詳細資料(長圖)">
+            <ImgUploader
+              v-on:outData="getChildValue"
+              for="詳細資料"
+              :orgImg="$route.params.productsInfo != undefined?$route.params.productsInfo.detailInfoImg:''"
+            ></ImgUploader>
+          </el-form-item>
+          <el-form-item label="匯款資訊">
+            <el-input
+              type="textarea"
+              :rows="5"
+              placeholder="請輸入匯款資訊"
+              v-model="bankInfo"
+              autosize
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="訂購資訊">
+            <el-input
+              type="textarea"
+              :rows="5"
+              placeholder="請輸入訂購資訊"
+              v-model="buyNeedKnow"
+              autosize
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="銷售價格">
+            <el-input
+              placeholder="請輸入銷售價格"
+              v-model="price"
+              autosize
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="運費">
+            <el-input
+              placeholder="請輸入運費"
+              v-model="ShippingPrice"
+              autosize
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="幾件以上免運(含)">
+            <el-input
+              placeholder="若無免運請輸入999"
+              v-model="freeShipping"
+              autosize
+            ></el-input>
+          </el-form-item>
+          <a
+            href="javascript:;"
+            class="btn btn-warning btn-block"
+            @click="setProductInfoHandler"
+            >送出</a
+          >
+        </el-form>
+      </div>
+    </div>
+  </div>
+</div>
