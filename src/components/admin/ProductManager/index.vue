@@ -1,7 +1,11 @@
 <script>
 import axios from "axios";
+import checkadmin from "../CheckAdmin";
 export default {
   name: "productManager",
+  components: {
+    checkadmin
+  },
   data() {
     return {
       loading: false,

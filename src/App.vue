@@ -27,7 +27,8 @@ export default {
       },
       err => {}
     );
-    // this.lineId = "U729a733b259f5e529339bf36b9f3da13";
+    this.lineId = "U729a733b259f5e529339bf36b9f3da13";
+    this.$store.dispatch("getLineId", this.lineId);
   },
   updated() {
     var self = this;

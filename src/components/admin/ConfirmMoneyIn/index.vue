@@ -1,8 +1,12 @@
 <script>
 import axios from "axios";
 import { setTimeout } from "timers";
+import checkadmin from "../CheckAdmin";
 export default {
   name: "confirmMoneyIn",
+  components: {
+    checkadmin
+  },
   data() {
     return {
       showCheck: false,

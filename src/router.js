@@ -2,14 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
-const RV = {
-  template: `
-    <div class="RV">
-    <p>RV</p>
-      <router-view></router-view>
-    </div>
-  `
-}
 export default new Router({
   mode: 'history',
   routes: [
@@ -79,10 +71,14 @@ export default new Router({
       path: '/pm/upload',
       name: '產品上架',
       component: () =>
-        import(
-          '@/components/admin/ProductManager/UploadProduct'
-        ) /* webpackChunkName: "about" */,
+        import('@/components/admin/ProductManager/UploadProduct'),
       meta: { title: '產品上架' }
+    },
+    {
+      path: '/isnotadmin',
+      name: '權限不夠',
+      component: () => import('./components/admin/CheckAdmin/IsNotAdmin'),
+      meta: { title: '權限不夠' }
     }
   ]
 })
