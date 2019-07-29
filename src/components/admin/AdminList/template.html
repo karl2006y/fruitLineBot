@@ -1,3 +1,12 @@
-<div class="adminList">
+<div class="adminList container">
   AdminList
+  <checkadmin></checkadmin>
+  <div v-if="allAdminList">
+    <el-table :data="allAdminList" style="width: 100%">
+      <el-table-column prop="index" label="管理員編號" width="180">
+      </el-table-column>
+      <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
+      <el-table-column prop="id" label="Line序號"> </el-table-column>
+    </el-table>
+  </div>
 </div>

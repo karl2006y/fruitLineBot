@@ -79,6 +79,12 @@ export default new Router({
       name: '權限不夠',
       component: () => import('./components/admin/CheckAdmin/IsNotAdmin'),
       meta: { title: '權限不夠' }
+    },
+    {
+      path: '/test',
+      name: '測試',
+      component: () => import('./components/admin/AdminList'),
+      meta: { title: '管理員列表' }
     }
   ]
 })
