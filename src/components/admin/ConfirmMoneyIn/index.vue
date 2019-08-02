@@ -74,6 +74,7 @@ export default {
     getAllBuyList() {
       var self = this;
       self.loading = true;
+      let childrenHistory = [];
       axios({
         methods: "get",
         url:
@@ -82,8 +83,36 @@ export default {
         self.allBuyList = resp.data[0];
         self.getProductInfoHandler(resp.data[1]);
 
+        self.allBuyList.forEach((item, index) => {
+          if (item.money.indexOf("子訂單") != -1) {
+            self.childernPushToMyHistoryHandler(item);
+            self.allBuyList.splice(index, 1);
+          }
+        });
+
         self.loading = false;
       });
+    },
+    childernPushToMyHistoryHandler(item) {
+      const self = this;
+      if (item.money.indexOf("子訂單") != -1) {
+        const parentId = Number(item.money.split("的")[0]);
+        console.log(item.money, parentId);
+        self.allBuyList.forEach(element => {
+          if (element.id == parentId) {
+            element.childrenList = [];
+            element.childrenList.push({
+              name: item.name,
+              phone: item.phone,
+              address: item.address,
+              note: item.note,
+              count: item.count
+            });
+          }
+        });
+      } else {
+        return false;
+      }
     },
     getMoneyHandler(id) {
       console.log(id, "確定收到");
@@ -95,6 +124,22 @@ export default {
           "https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=changeStatus&id=" +
           id +
           "&status=水果準備中,go"
+      }).then(resp => {
+        location.reload();
+      });
+    },
+    backHandler(id, status) {
+      var self = this;
+      self.loading = true;
+      var URL =
+        "https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=changeStatus&id=" +
+        id +
+        "&status=" +
+        status;
+      console.log(URL);
+      axios({
+        methods: "get",
+        url: URL
       }).then(resp => {
         location.reload();
       });

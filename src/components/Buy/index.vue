@@ -17,13 +17,28 @@ export default {
         isSameWithBuyer: false,
         name: "",
         phone: "",
-        address: ""
+        address: "",
+        count: 1
+      },
+      manyGetters: false,
+      nowsentAxios: 1,
+      getters: {
+        num: 2,
+        list: [{}]
       },
       done: false,
       loading: true
     };
   },
   watch: {
+    // "getters.num"(val) {
+    //   if (this.done && val < 1) {
+    //     self.myDiscounts = [];
+    //     self.$router.push({
+    //       name: "購買紀錄"
+    //     });
+    //   }
+    // },
     "getter.isSameWithBuyer": function(val) {
       let self = this;
       if (val) {
@@ -34,6 +49,22 @@ export default {
         self.getter.name = "";
         self.getter.phone = "";
         self.getter.address = "";
+      }
+    },
+    manyGetters(val) {
+      if (val) {
+        this.getters.list = [];
+        this.getters.list.push(this.getter);
+        for (var i = 0; i < this.getters.num - 1; i++) {
+          this.getters.list.push({ count: 1 });
+        }
+      }
+    },
+    "getters.num"(val) {
+      this.getters.list = [];
+      this.getters.list.push(this.getter);
+      for (var i = 0; i < val - 1; i++) {
+        this.getters.list.push({ count: 1 });
       }
     }
   },
@@ -52,10 +83,18 @@ export default {
       }
     },
     money: function() {
-      return this.buyListData.count > this.productData.freeShipping - 1
-        ? this.buyListData.count * this.productData.price
-        : this.buyListData.count * this.productData.price +
-            this.buyListData.count * this.productData.ShippingPrice;
+      if (this.manyGetters) {
+        return this.buyListData.count > this.productData.freeShipping - 1
+          ? this.buyListData.count * this.productData.price +
+              (this.getters.num - 1) * 50
+          : this.buyListData.count * this.productData.price +
+              this.buyListData.count * this.productData.ShippingPrice;
+      } else {
+        return this.buyListData.count > this.productData.freeShipping - 1
+          ? this.buyListData.count * this.productData.price
+          : this.buyListData.count * this.productData.price +
+              this.buyListData.count * this.productData.ShippingPrice;
+      }
     },
     useDiscount() {
       if (this.chooseDiscountValue == "不使用") {
@@ -65,6 +104,33 @@ export default {
           this.myDiscounts[Number(this.chooseDiscountValue)].discount
         );
       }
+    },
+    manyGettersProductLimit() {
+      const limtNum = this.buyListData.count;
+      let nowNum = 0;
+      this.getters.list.forEach(item => {
+        nowNum += item.count;
+      });
+
+      return limtNum - nowNum;
+    },
+    manyGetterCansent() {
+      let canSent = true;
+      this.getters.list.forEach(item => {
+        if (item.name == undefined || item.name == "") {
+          canSent = false;
+        }
+        if (item.phone == undefined || item.phone == "") {
+          canSent = false;
+        }
+        if (item.address == undefined || item.address == "") {
+          canSent = false;
+        }
+      });
+      if (this.manyGettersProductLimit != 0) {
+        canSent = false;
+      }
+      return canSent;
     }
   },
   created() {
@@ -153,6 +219,11 @@ export default {
       let self = this;
       self.useDiscountHandler();
       self.loading = true;
+      if (this.manyGetters) {
+        var count = self.getters.list[0].count;
+      } else {
+        var count = self.buyListData.count;
+      }
       var URL =
         "https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=addBuy&lineId=" +
         self.lineId +
@@ -165,7 +236,7 @@ export default {
         "&address=" +
         self.getter.address +
         "&count=" +
-        self.buyListData.count +
+        count +
         "&note=" +
         self.buyListData.note +
         "&money=" +
@@ -177,12 +248,17 @@ export default {
         methods: "get",
         url: URL
       }).then(resp => {
-        self.loading = false;
         self.done = true;
-        self.myDiscounts = [];
-        self.$router.push({
-          name: "購買紀錄"
-        });
+
+        if (this.manyGetters) {
+          this.manyGettersBuyHandler(resp.data.id);
+        } else {
+          self.loading = false;
+          self.myDiscounts = [];
+          self.$router.push({
+            name: "購買紀錄"
+          });
+        }
       });
     },
     useDiscountHandler: function() {
@@ -201,6 +277,31 @@ export default {
         axios({
           methods: "get",
           url: URL
+        });
+      }
+    },
+    manyGettersBuyHandler(id) {
+      const self = this;
+      self.loading = true;
+      const getters = self.getters.list;
+      let i = this.nowsentAxios;
+
+      if (this.nowsentAxios == this.getters.num) {
+        self.loading = false;
+        self.myDiscounts = [];
+        self.$router.push({
+          name: "購買紀錄"
+        });
+      } else {
+        var URL = `https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=addBuy&lineId=${self.lineId}&pName=${self.productData.name}&name=${getters[i].name}&phone=${getters[i].phone}&address=${getters[i].address}&count=${getters[i].count}&note=${getters[i].note}&discountMoney=${id}的子訂單`;
+        console.log(URL);
+        URL.replace(/undefined/g, "");
+        axios({
+          methods: "get",
+          url: URL
+        }).then(resp => {
+          this.nowsentAxios++;
+          this.manyGettersBuyHandler(id);
         });
       }
     }

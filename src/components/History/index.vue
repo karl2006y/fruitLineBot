@@ -15,9 +15,18 @@ export default {
       return this.$store.state.lineId;
     }
   },
-
+  created() {
+    const val = this.lineId;
+    console.log("lineId:", val);
+    if (val != false && val != undefined) {
+      var self = this;
+      self.isCustomer();
+      self.getMyHistoryList();
+    }
+  },
   watch: {
     lineId(val) {
+      console.log("lineId:", val);
       if (val != false && val != undefined) {
         var self = this;
         self.isCustomer();
@@ -25,6 +34,7 @@ export default {
       }
     }
   },
+
   methods: {
     gotoMenu() {
       liff
@@ -77,14 +87,46 @@ export default {
           "https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=getList&lineId=all"
       }).then(resp => {
         self.myHistoryList = [];
+        let childrenHistory = [];
         resp.data[0].forEach(item => {
           if (item.lineId == self.lineId) {
-            item.productInfo = self.getProduct(resp.data[1], item.productName);
-            self.myHistoryList.push(item);
+            if (item.money.indexOf("子訂單") != -1) {
+              childrenHistory.push(item);
+            } else {
+              item.productInfo = self.getProduct(
+                resp.data[1],
+                item.productName
+              );
+              self.myHistoryList.push(item);
+            }
           }
+        });
+        childrenHistory.forEach(item => {
+          self.childernPushToMyHistoryHandler(item);
         });
         self.loading = false;
       });
+    },
+    childernPushToMyHistoryHandler(item) {
+      const self = this;
+      if (item.money.indexOf("子訂單") != -1) {
+        const parentId = Number(item.money.split("的")[0]);
+        console.log(item.money, parentId);
+        self.myHistoryList.forEach(element => {
+          if (element.id == parentId) {
+            element.childrenList = [];
+            element.childrenList.push({
+              name: item.name,
+              phone: item.phone,
+              address: item.address,
+              note: item.note,
+              count: item.count
+            });
+          }
+        });
+      } else {
+        return false;
+      }
     },
     isCustomer: function() {
       console.log("檢查會員狀態");

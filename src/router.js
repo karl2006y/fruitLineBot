@@ -81,6 +81,12 @@ export default new Router({
       meta: { title: '權限不夠' }
     },
     {
+      path: '/tofactory',
+      name: '工廠訂單',
+      component: () => import('./components/admin/ToFactory'),
+      meta: { title: '工廠訂單' }
+    },
+    {
       path: '/test',
       name: '測試',
       component: () => import('./components/admin/AdminList'),

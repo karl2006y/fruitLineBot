@@ -46,6 +46,24 @@ export default {
         }
         self.loading = false;
       });
+    },
+    deleteProduct() {
+      const self = this;
+      const id = self.showProductIndex;
+      self.loading = true;
+      var URL = `https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=setProductInfo&id=${id}&name=&lineName=&lineInfo=&img=&bankInfo=&buyNeedKnow=&price=&ShippingPrice=$&freeShipping=&detailInfoImg=&otherAddressShipping=`;
+      URL = URL.replace(/\r\n/g, "\\n");
+      URL = URL.replace(/\n/g, "\\n");
+      URL = URL.replace(/\s/g, "<空白>");
+
+      console.log(URL);
+      axios({
+        methods: "get",
+        url: URL
+      }).then(resp => {
+        self.productsInfo = [];
+        this.getProductsInfoHandler();
+      });
     }
   }
 };

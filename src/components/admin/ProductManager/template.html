@@ -72,7 +72,7 @@
           @click="$router.push({ name: '產品上架', params: { productsInfo:productsInfo[showProductIndex] }}) "
           >編輯</el-button
         >
-        <el-button type="danger">刪除</el-button>
+        <el-button @click="deleteProduct" type="danger">刪除</el-button>
       </div>
     </div>
   </div>

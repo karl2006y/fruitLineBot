@@ -53,7 +53,23 @@
           >
           <p></p>
           <div class="form-group">
-            <label for="inputCount"><b>運費</b></label>
+            <label class="d-inline-block" for="inputCount"><b>運費</b></label>
+            <span v-if="buyListData.count>1">
+              是否有多個住址寄送：<el-switch
+                v-model="manyGetters"
+                active-text="是"
+                inactive-text="否"
+              >
+              </el-switch>
+            </span>
+            <div v-if="manyGetters">
+              <el-input-number
+                v-model="getters.num"
+                :min="2"
+                :max="buyListData.count"
+                label="請輸入需要寄送多少個不同住址"
+              ></el-input-number>
+            </div>
             <div v-if="buyListData.count>productData.freeShipping-1">
               <S>
                 <span v-if="buyListData.count!=undefined"
@@ -61,13 +77,17 @@
                   {{ buyListData.count * productData.ShippingPrice }} 元</span
                 >
               </S>
-              <H4 class="text-danger">免運</H4>
+              <H4 v-if="manyGetters" class="text-danger"
+                >1個免運 + {{ getters.num - 1 }}個50元</H4
+              >
+              <H4 v-else class="text-danger">免運 </H4>
             </div>
             <div v-else>
               <span v-if="buyListData.count!=undefined"
                 >$ {{ buyListData.count * productData.ShippingPrice }} 元</span
               >
             </div>
+
             <p></p>
             <div>
               <div class="input-group mb-3">
@@ -105,6 +125,14 @@
             <p>姓名：{{ myInfo.name }}</p>
             <p>連絡電話：{{ myInfo.phone }}</p>
             <p>通訊地址：{{ myInfo.address }}</p>
+          </div>
+
+          <hr />
+
+          <div v-if="!manyGetters">
+            <h4>
+              <b><i class="el-icon-user" aria-hidden="true"></i> 收件人</b>
+            </h4>
             <p>
               訂購人與寄件人：<el-switch
                 v-model="getter.isSameWithBuyer"
@@ -113,14 +141,6 @@
               >
               </el-switch>
             </p>
-          </div>
-
-          <hr />
-          <h4>
-            <b><i class="el-icon-user" aria-hidden="true"></i> 收件人</b>
-          </h4>
-
-          <div>
             <div class="form-group">
               <label for="inputUserName2">姓名</label>
               <input
@@ -166,6 +186,92 @@
             <a
               href="javascript:;"
               v-if="getter.name != '' && getter.phone != '' && getter.address != ''"
+              @click="buyHandler()"
+              class="btn btn-warning btn-block "
+            >
+              送出
+            </a>
+            <button v-else class=" btn btn-warning btn-block " disabled>
+              送出
+            </button>
+          </div>
+          <div v-if="manyGetters">
+            <h4 v-if="manyGettersProductLimit>0" class="text-danger">
+              *尚有{{ manyGettersProductLimit }}件水果未選擇寄送地址
+            </h4>
+            <div class="form-group">
+              <div v-for="(item, index) in getters.num">
+                <h4>
+                  <b
+                    ><i class="el-icon-user" aria-hidden="true"></i> 收件人{{
+                      index + 1
+                    }}</b
+                  >
+                </h4>
+                <p v-if="index==0">
+                  訂購人與寄件人：<el-switch
+                    v-model="getter.isSameWithBuyer"
+                    active-text=" 相同"
+                    inactive-text="不相同"
+                  >
+                  </el-switch>
+                </p>
+                <label for="inputUserName2">姓名</label>
+                <input
+                  v-model="getters.list[index]['name']"
+                  type="text"
+                  class="form-control"
+                  id="inputUserName2"
+                  placeholder="請輸入收件人姓名"
+                />
+
+                <div class="form-group">
+                  <label for="inputPhone2">聯絡電話</label>
+                  <input
+                    v-model="getters.list[index]['phone']"
+                    type="text"
+                    class="form-control"
+                    id="inputPhone2"
+                    placeholder="請輸入收件人聯絡電話"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="inputAddress">收件人地址</label>
+                  <input
+                    v-model="getters.list[index]['address']"
+                    type="text"
+                    class="form-control"
+                    id="inputAddress2"
+                    placeholder="請輸入收件人地址"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="inputCount">件數 </label>
+                  <el-input-number
+                    v-model="getters.list[index].count"
+                    class="ml-3"
+                    :min="1"
+                    :max="manyGettersProductLimit+getters.list[index].count"
+                    label="請輸入訂購數量"
+                  ></el-input-number>
+                </div>
+                <div class="form-group">
+                  <label for="inputNote">寄件備註</label>
+                  <input
+                    v-model="getters.list[index]['note']"
+                    type="text"
+                    class="form-control"
+                    id="inputNote2"
+                    placeholder="寄件備註"
+                  />
+                </div>
+                <hr />
+              </div>
+            </div>
+            <a
+              href="javascript:;"
+              v-if="manyGetterCansent"
               @click="buyHandler()"
               class="btn btn-warning btn-block "
             >

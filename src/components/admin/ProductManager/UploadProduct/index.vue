@@ -20,7 +20,8 @@ export default {
       buyNeedKnow: "",
       price: "",
       ShippingPrice: "",
-      freeShipping: ""
+      freeShipping: "",
+      otherAddressShipping: ""
     };
   },
   created() {
@@ -31,15 +32,16 @@ export default {
     if (this.$route.params.productsInfo != undefined) {
       var that = this.$route.params.productsInfo;
       console.log("that", that);
-        this.id = that.id;
-        this.name = that.name;
-        this.lineName = that.lineName;
-        this.lineInfo = that.lineInfo.replace(/\\n/g, "\n");
-        this.bankInfo = that.bankInfo.replace(/\\n/g, "\n");
-        this.buyNeedKnow = that.buyNeedKnow.replace(/\\n/g, "\n");
-        this.price = that.price;
-        this.ShippingPrice = that.ShippingPrice;
-        this.freeShipping = that.freeShipping;
+      this.id = that.id;
+      this.name = that.name;
+      this.lineName = that.lineName;
+      this.lineInfo = that.lineInfo.replace(/\\n/g, "\n");
+      this.bankInfo = that.bankInfo.replace(/\\n/g, "\n");
+      this.buyNeedKnow = that.buyNeedKnow.replace(/\\n/g, "\n");
+      this.price = that.price;
+      this.ShippingPrice = that.ShippingPrice;
+      this.freeShipping = that.freeShipping;
+      this.otherAddressShipping = that.otherAddressShipping;
     }
     this.loading = false;
   },
@@ -56,7 +58,7 @@ export default {
     setProductInfoHandler() {
       var self = this;
 
-      var URL = `https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=setProductInfo&id=${self.id}&name=${self.name}&lineName=${self.lineName}&lineInfo=${self.lineInfo}&img=${self.img}&bankInfo=${self.bankInfo}&buyNeedKnow=${self.buyNeedKnow}&price=${self.price}&ShippingPrice=${self.ShippingPrice}&freeShipping=${self.freeShipping}&detailInfoImg=${self.detailInfoImg}`;
+      var URL = `https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=setProductInfo&id=${self.id}&name=${self.name}&lineName=${self.lineName}&lineInfo=${self.lineInfo}&img=${self.img}&bankInfo=${self.bankInfo}&buyNeedKnow=${self.buyNeedKnow}&price=${self.price}&ShippingPrice=${self.ShippingPrice}&freeShipping=${self.freeShipping}&detailInfoImg=${self.detailInfoImg}&otherAddressShipping=${self.otherAddressShipping}`;
       URL = URL.replace(/\r\n/g, "\\n");
       URL = URL.replace(/\n/g, "\\n");
       URL = URL.replace(/\s/g, "<空白>");

@@ -1,0 +1,65 @@
+<div class="toFactory container">
+  <div class="row">
+    <div class="col text-right">
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="尚未出貨"
+          value="水果準備中"
+          v-model="checkedNames"
+        />
+        <label class="form-check-label" for="尚未出貨"><h4>尚未出貨</h4></label>
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="已出貨"
+          value="出貨摟～"
+          v-model="checkedNames"
+        />
+        <label class="form-check-label" for="已出貨"><h4>已出貨</h4></label>
+      </div>
+    </div>
+  </div>
+  <el-table
+    :data="allBuyList.filter(item => checkedNames.toString().indexOf(item.stauts) !=-1)"
+    stripe
+    style="width: 100%"
+    :height="tableHeight"
+    v-loading="loading"
+  >
+    >
+    <el-table-column prop="time" label="日期" sortable width="180">
+    </el-table-column>
+    <el-table-column prop="id" label="訂單號" sortable width="90">
+    </el-table-column>
+    <el-table-column prop="productName" label="產品名稱" width="90">
+    </el-table-column>
+    <el-table-column prop="count" label="數量" sortable width="90">
+    </el-table-column>
+    <el-table-column prop="name" label="姓名" width="90"> </el-table-column>
+    <el-table-column prop="phone" label="連絡電話" width="110">
+    </el-table-column>
+    <el-table-column prop="address" label="地址"> </el-table-column>
+    <!-- 
+    <el-table-column prop="stauts" label="狀態" sortable width="180">
+    </el-table-column> -->
+    <el-table-column fixed="right" label="操作" width="120">
+      <template slot-scope="scope">
+        <el-button
+          v-if="scope.row.stauts == '水果準備中'"
+          type="primary"
+          icon="el-icon-thumb"
+          @click="alreadyOutHandler(scope.row.id)"
+          >出貨</el-button
+        >
+        <p v-else>已出貨，若有問題煩請聯絡管理員</p>
+      </template>
+    </el-table-column>
+  </el-table>
+  <p></p>
+</div>

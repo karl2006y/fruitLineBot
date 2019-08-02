@@ -7,6 +7,7 @@
       @click="search=[];search.push('尚未付款')"
       class="btn btn-secondary active"
     >
+      <i class="el-icon-thumb"></i>
       <input
         type="radio"
         name="options"
@@ -17,28 +18,24 @@
       未付款
     </button>
     <button
-      @click="search=[];search.push('已付款，核實中');search.push('水果準備中');search.push('出貨摟～');"
+      @click="search=[];search.push('已付款，核實中');search.push('水果準備中');"
       class="btn btn-secondary"
     >
+      <i class="el-icon-thumb"></i>
       <input type="radio" name="options" id="option3" autocomplete="off" />
       已付款
     </button>
-    <button
-      @click="search=[];search.push('尚未付款');search.push('已付款，核實中');search.push('水果準備中')"
-      class="btn btn-secondary"
-    >
-      <input type="radio" name="options" id="option4" autocomplete="off" />
-      未出貨
-    </button>
+
     <button
       @click="search=[];search.push('出貨摟～')"
       class="btn btn-secondary"
     >
+      <i class="el-icon-thumb"></i>
       <input type="radio" name="options" id="option5" autocomplete="off" />
       已出貨
     </button>
   </div>
-
+  <p class="mt-2 ml-2"><b> ↑點擊上方列表 切換查詢訂單狀態</b></p>
   <div
     v-loading="loading"
     element-loading-text="努力載入中..."
@@ -67,93 +64,109 @@
             <h4>
               <b><i class="el-icon-box" aria-hidden="true"></i> 訂單資訊</b>
             </h4>
-            <small>
+
+            <span class="btn btn-info mb-3" v-if="i.stauts == '水果準備中'"
+              ><i class="el-icon-warning-outline"></i> 繳費狀態：已付款</span
+            >
+            <span class="btn btn-danger mb-3" v-if="i.stauts == '尚未付款'"
+              ><i class="el-icon-warning-outline"></i> 繳費狀態：尚未付款</span
+            >
+            <span
+              class="btn btn-warning mb-3"
+              v-if="i.stauts == '已付款，核實中'"
+              ><i class="el-icon-warning-outline"></i> 繳費狀態：已付款</span
+            >
+            <span class="btn btn-success mb-3" v-if="i.stauts == '出貨摟～'"
+              ><i class="el-icon-warning-outline"></i> 繳費狀態：已付款</span
+            >
+
+            <div>
+              <div>
+                <div v-if="i.stauts == '尚未付款'">
+                  <h4 class="mt-4">
+                    <b
+                      ><i class="el-icon-bank-card" aria-hidden="true"></i>
+                      匯款資訊</b
+                    >
+                  </h4>
+
+                  請輸入帳號後五碼
+                  <p></p>
+                  <el-input
+                    v-model.number="cardLast5Num[i.id]"
+                    type="number"
+                    clearable
+                  ></el-input>
+                  <button
+                    disabled
+                    v-if="cardLast5Num[i.id]==undefined || cardLast5Num[i.id] == ''"
+                    class="btn-block btn btn-warning mt-2"
+                  >
+                    <i class="el-icon-thumb"></i>
+                    確定
+                  </button>
+                  <button
+                    v-else
+                    @click="cardLast5NumHandler(i.id,cardLast5Num[i.id],i.money, i.name )"
+                    class="btn-block btn btn-warning mt-2"
+                  >
+                    <i class="el-icon-thumb"></i>
+                    確定
+                  </button>
+                </div>
+                <div v-if="i.stauts == '已付款，核實中'">
+                  核實中...
+                  <p></p>
+                  若有疑問煩請聯絡我們
+                </div>
+                <div v-if="i.stauts == '水果準備中'">
+                  已核實，水果準備中...
+                  <p></p>
+                  若有疑問煩請聯絡我們
+                </div>
+                <div v-if="i.stauts == '出貨摟～'">
+                  出貨摟～
+                  <p></p>
+                  若有疑問煩請聯絡我們
+                </div>
+                <br />
+                <p
+                  v-if="i.stauts == '尚未付款'"
+                  v-for='text in i.productInfo.bankInfo.split("\\n")'
+                >
+                  {{ text }}
+                </p>
+                <hr />
+              </div>
               <p>訂單編號：{{ i.id }}</p>
               <p>訂單時間：{{ i.time }}</p>
               <p>訂單名稱：{{ i.productName }}</p>
-              <p>訂單件數：{{ i.count }}</p>
-              <p>付款金額：{{ i.money }}</p>
-              <p v-if="i.stauts == '水果準備中'">繳費狀態：已付款</p>
-              <p v-if="i.stauts == '尚未付款'">繳費狀態：尚未付款</p>
-              <p v-if="i.stauts == '已付款，核實中'">繳費狀態：已付款</p>
-              <p v-if="i.stauts == '出貨摟～'">繳費狀態：已付款</p>
-
+              <p>
+                付款金額：<b>{{ i.money }}</b>
+              </p>
+              <el-divider></el-divider>
               <p>收件人姓名：{{ i.name }}</p>
               <p>收件人電話：{{ i.phone }}</p>
               <p>收件人住址：{{ i.address }}</p>
-              <p>訂單備註：{{ i.note == 'undefined' ? '' : i.note }}</p>
-            </small>
-            <hr />
-
-            <div v-if="i.stauts == '尚未付款'">
-              <h4 class="mt-4">
-                <b
-                  ><i class="el-icon-bank-card" aria-hidden="true"></i>
-                  匯款資訊</b
-                >
-              </h4>
-              <p v-for='text in i.productInfo.bankInfo.split("\\n")'>
-                {{ text }}
+              <p>
+                訂單件數：<b>{{ i.count }}</b>
               </p>
-              <hr />
-              請輸入帳號後五碼
-              <p></p>
-              <el-input
-                v-model.number="cardLast5Num[i.id]"
-                type="number"
-                clearable
-              />
-              <button
-                disabled
-                v-if="cardLast5Num[i.id]==undefined || cardLast5Num[i.id] == ''"
-                class="btn-block btn btn-warning mt-2"
+              <p>訂單備註：{{ i.note == 'undefined' ? '' : i.note }}</p>
+              <div
+                v-if="i.childrenList"
+                v-for="(item , index) in i.childrenList"
               >
-                確定
-              </button>
-              <button
-                v-else
-                @click="cardLast5NumHandler(i.id,cardLast5Num[i.id],i.money, i.name )"
-                class="btn-block btn btn-warning mt-2"
-              >
-                確定
-              </button>
+                <el-divider></el-divider>
+                <p>收件人{{ index + 2 }} 姓名：{{ item.name }}</p>
+                <p>收件人{{ index + 2 }} 電話：{{ item.phone }}</p>
+                <p>收件人{{ index + 2 }} 住址：{{ item.address }}</p>
+                <p>
+                  訂單件數：<b>{{ item.count }}</b>
+                </p>
+                <p>訂單備註：{{ item.note == 'undefined' ? '' : item.note }}</p>
+              </div>
             </div>
-            <div v-if="i.stauts == '已付款，核實中'">
-              核實中...
-              <p></p>
-              若有疑問煩請聯絡我們
-              <button
-                data-toggle="modal"
-                data-target="#exampleModal"
-                class="btn btn-warning mt-2"
-              >
-                聯絡資訊
-              </button>
-            </div>
-            <div v-if="i.stauts == '水果準備中'">
-              已核實，水果準備中...
-              <p></p>
-              若有疑問煩請聯絡我們
-              <button
-                class="btn btn-warning mt-2"
-                data-toggle="modal"
-                data-target="#exampleModal"
-              >
-                聯絡資訊
-              </button>
-            </div>
-            <div v-if="i.stauts == '出貨摟～'">
-              出貨摟～
-              <p></p>
-              若有疑問煩請聯絡我們
-              <button
-                data-toggle="modal"
-                data-target="#exampleModal"
-                class="btn btn-warning mt-2"
-              >
-                聯絡資訊
-              </button>
-            </div>
+            <hr />
           </div>
         </div>
       </div>
