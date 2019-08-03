@@ -84,49 +84,66 @@
         <div class="card-body">
           <div>
             <h4>
-              <span class="btn btn-info mb-3" v-if="i.stauts == '水果準備中'"
-                ><i class="el-icon-warning-outline"></i> 繳費狀態：已付款</span
-              >
-              <span class="btn btn-danger mb-3" v-if="i.stauts == '尚未付款'"
-                ><i class="el-icon-warning-outline"></i>
-                繳費狀態：尚未付款</span
-              >
-              <span
-                class="btn btn-warning mb-3"
-                v-if="i.stauts == '已付款，核實中'"
-                ><i class="el-icon-warning-outline"></i> 繳費狀態：已付款</span
-              >
-              <span class="btn btn-success mb-3" v-if="i.stauts == '出貨摟～'"
-                ><i class="el-icon-warning-outline"></i> 繳費狀態：已出貨</span
-              >
+              <statusCom :status="i.stauts"></statusCom>
               <br />
               <b v-if="i.stauts == '已付款，核實中'">已付款，需管理員審核</b>
               <b v-if="i.stauts == '水果準備中'">已付款，等待工廠出貨</b>
             </h4>
-            <p>訂單編號：{{ i.id }}</p>
-            <p>訂單名稱：{{ i.productName }}</p>
-            <p>帳號後五碼：{{ i.cardLast5Num }}</p>
-            <p>付款金額：{{ i.money }}</p>
-            <p>訂單時間：{{ i.time }}</p>
-            <p>收件人姓名：{{ i.name }}</p>
-            <p>收件人電話：{{ i.phone }}</p>
-            <p>收件人住址：{{ i.address }}</p>
-            <p>訂單件數：{{ i.count }}</p>
-            <p>訂單備註：{{ i.note == 'undefined' ? '' : i.note }}</p>
-            <div v-if="i.childrenList" v-for="(item , index) in i.childrenList">
+            <div :class="i.childrenList?'ml-3':''">
+              <p>訂單名稱：{{ i.productName }}</p>
+              <p>帳號後五碼：{{ i.cardLast5Num }}</p>
+              <p>付款金額：{{ i.money }}</p>
+              <p>訂單時間：{{ i.time }}</p>
               <el-divider></el-divider>
-              <p>收件人{{ index + 2 }} 姓名：{{ item.name }}</p>
-              <p>收件人{{ index + 2 }} 電話：{{ item.phone }}</p>
-              <p>收件人{{ index + 2 }} 住址：{{ item.address }}</p>
-              <p>訂單件數：{{ item.count }}</p>
-              <p>訂單備註：{{ item.note == 'undefined' ? '' : item.note }}</p>
+              <p>訂單編號：{{ i.id }}</p>
+              <statusCom
+                v-if="i.childrenList"
+                :status="i.firstStauts"
+              ></statusCom>
+              <p>收件人姓名：{{ i.name }}</p>
+              <p>收件人電話：{{ i.phone }}</p>
+              <p>收件人住址：{{ i.address }}</p>
+              <p>訂單件數：{{ i.count }}</p>
+              <p>訂單備註：{{ i.note == 'undefined' ? '' : i.note }}</p>
+              <div v-if="i.firstStauts == '出貨摟～'">
+                <button
+                  @click="productNotYetOutHandler(i.id)"
+                  class="btn-block btn btn-danger mt-2"
+                >
+                  註銷訂單編號{{ i.id }}，狀態退回尚未出貨
+                </button>
+              </div>
+              <div
+                v-if="i.childrenList"
+                v-for="(item , index) in i.childrenList"
+              >
+                <el-divider></el-divider>
+                <p>訂單編號：{{ item.id }}</p>
+                <statusCom
+                  v-if="item.stauts =='水果準備中' || item.stauts =='出貨摟～'"
+                  :status="item.stauts"
+                ></statusCom>
+                <p>收件人{{ index + 2 }} 姓名：{{ item.name }}</p>
+                <p>收件人{{ index + 2 }} 電話：{{ item.phone }}</p>
+                <p>收件人{{ index + 2 }} 住址：{{ item.address }}</p>
+                <p>訂單件數：{{ item.count }}</p>
+                <p>訂單備註：{{ item.note == 'undefined' ? '' : item.note }}</p>
+                <div v-if="item.stauts == '出貨摟～'">
+                  <button
+                    @click="productNotYetOutHandler(item.id)"
+                    class="btn-block btn btn-danger mt-2"
+                  >
+                    註銷訂單編號{{ item.id }}，狀態退回尚未出貨
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         <div class="card-footer">
           <div v-if="i.stauts == '已付款，核實中'">
             <button
-              @click="getMoneyHandler(i.id)"
+              @click="getMoneyHandler(i)"
               class="btn-block btn btn-warning mt-2"
             >
               確認款項已收到，並通知工廠出貨
@@ -144,14 +161,6 @@
               class="btn-block btn btn-danger mt-2"
             >
               退回「尚未付款」
-            </button>
-          </div>
-          <div v-if="i.stauts == '出貨摟～'">
-            <button
-              @click="productNotYetOutHandler(i.id)"
-              class="btn-block btn btn-danger mt-2"
-            >
-              註銷此訂單，狀態退回尚未出貨
             </button>
           </div>
         </div>

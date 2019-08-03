@@ -2,10 +2,12 @@
 import axios from "axios";
 import { setTimeout } from "timers";
 import checkadmin from "../CheckAdmin";
+import statusCom from "../../Status";
 export default {
   name: "confirmMoneyIn",
   components: {
-    checkadmin
+    checkadmin,
+    statusCom
   },
   data() {
     return {
@@ -17,7 +19,8 @@ export default {
       loading: true,
       allBuyList: [],
       searchText: "",
-      showCard: true
+      showCard: true,
+      idList: false
     };
   },
   mounted() {
@@ -75,6 +78,7 @@ export default {
       var self = this;
       self.loading = true;
       let childrenHistory = [];
+      let myHistoryList = [];
       axios({
         methods: "get",
         url:
@@ -83,15 +87,34 @@ export default {
         self.allBuyList = resp.data[0];
         self.getProductInfoHandler(resp.data[1]);
 
-        self.allBuyList.forEach((item, index) => {
-          if (item.money.indexOf("子訂單") != -1) {
-            self.childernPushToMyHistoryHandler(item);
-            self.allBuyList.splice(index, 1);
-          }
-        });
+        // self.allBuyList.forEach((item, index) => {
+        //   console.log("訂單", item.id, "子訂單", item.money);
+        //   if (item.money.indexOf("子訂單") != -1) {
+        //     console.log("刪除子訂單", item.id);
+        //   }
+        // });
 
+        for (let i = 0; i < self.allBuyList.length; i++) {
+          if (self.allBuyList[i].money.indexOf("子訂單") != -1) {
+            console.log("刪除子訂單", self.allBuyList[i].id);
+            self.childernPushToMyHistoryHandler(self.allBuyList[i]);
+            self.allBuyList.splice(i, 1);
+            i = 0;
+          }
+        }
+
+        self.allBuyList.forEach(item => {
+          self.checkMeAndMyChridenStatus(item);
+        });
         self.loading = false;
       });
+    },
+    checkMeAndMyChridenStatus(item) {
+      item.firstStauts = item.stauts;
+      const itemStrang = JSON.stringify(item);
+      if (itemStrang.indexOf("水果準備中") != -1) {
+        item.stauts = "水果準備中";
+      }
     },
     childernPushToMyHistoryHandler(item) {
       const self = this;
@@ -100,8 +123,12 @@ export default {
         console.log(item.money, parentId);
         self.allBuyList.forEach(element => {
           if (element.id == parentId) {
-            element.childrenList = [];
+            if (element.childrenList == undefined) {
+              element.childrenList = [];
+            }
             element.childrenList.push({
+              id: item.id,
+              stauts: item.stauts,
               name: item.name,
               phone: item.phone,
               address: item.address,
@@ -114,19 +141,36 @@ export default {
         return false;
       }
     },
-    getMoneyHandler(id) {
-      console.log(id, "確定收到");
+    getMoneyHandler(buyData) {
       var self = this;
-      self.loading = true;
-      axios({
-        methods: "get",
-        url:
-          "https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=changeStatus&id=" +
-          id +
-          "&status=水果準備中,go"
-      }).then(resp => {
+      if (self.idList === false) {
+        console.log("收到1");
+        self.idList = [];
+        self.idList.push(buyData.id);
+        buyData.childrenList.forEach(item => {
+          self.idList.push(item.id);
+          self.getMoneyHandler();
+        });
+      } else if (self.idList.length > 0) {
+        const outId = self.idList[0];
+        self.idList.splice(0, 1);
+        self.loading = true;
+        axios({
+          methods: "get",
+          url:
+            "https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=changeStatus&id=" +
+            outId +
+            "&status=水果準備中,go"
+        }).then(resp => {
+          console.log("收到id", outId);
+          self.getMoneyHandler();
+        });
+      } else if (self.idList.length == 0) {
+        self.idList == true;
         location.reload();
-      });
+        console.log("結束");
+      }
+      console.log("getMoneyHandler");
     },
     backHandler(id, status) {
       var self = this;

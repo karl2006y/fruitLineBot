@@ -1,7 +1,11 @@
 <script>
 import axios from "axios";
+import statusCom from "../Status";
 export default {
   name: "history",
+  components: {
+    statusCom
+  },
   data() {
     return {
       loading: true,
@@ -104,8 +108,18 @@ export default {
         childrenHistory.forEach(item => {
           self.childernPushToMyHistoryHandler(item);
         });
+        self.myHistoryList.forEach(item => {
+          self.checkMeAndMyChridenStatus(item);
+        });
         self.loading = false;
       });
+    },
+    checkMeAndMyChridenStatus(item) {
+      item.firstStauts = item.stauts;
+      const itemStrang = JSON.stringify(item);
+      if (itemStrang.indexOf("水果準備中") != -1) {
+        item.stauts = "水果準備中";
+      }
     },
     childernPushToMyHistoryHandler(item) {
       const self = this;
@@ -116,6 +130,8 @@ export default {
           if (element.id == parentId) {
             element.childrenList = [];
             element.childrenList.push({
+              id: item.id,
+              stauts: item.stauts,
               name: item.name,
               phone: item.phone,
               address: item.address,

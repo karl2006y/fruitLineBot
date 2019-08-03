@@ -1,0 +1,14 @@
+<div class="status">
+  <span class="btn btn-info mb-3" v-if="status == '水果準備中'"
+    ><i class="el-icon-warning-outline"></i> 狀態：等待工廠出貨</span
+  >
+  <span class="btn btn-danger mb-3" v-if="status == '尚未付款'"
+    ><i class="el-icon-warning-outline"></i> 狀態：尚未付款</span
+  >
+  <span class="btn btn-warning mb-3" v-if="status == '已付款，核實中'"
+    ><i class="el-icon-warning-outline"></i> 狀態：核實中</span
+  >
+  <span class="btn btn-success mb-3" v-if="status == '出貨摟～'"
+    ><i class="el-icon-warning-outline"></i> 狀態：已出貨</span
+  >
+</div>

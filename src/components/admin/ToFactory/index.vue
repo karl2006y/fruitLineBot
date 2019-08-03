@@ -74,11 +74,11 @@ export default {
           "https://script.google.com/macros/s/AKfycbz-7KYcM8ZYDsGIQcb_TLyZTyUdTYyunSUnYOEPxA/exec?method=getList&lineId=all"
       }).then(resp => {
         self.allBuyList = resp.data[0];
-        self.allBuyList.forEach((item, index) => {
-          if (item.money.indexOf("子訂單") != -1) {
-            self.childernGetParentStatusHandler(item);
-          }
-        });
+        // self.allBuyList.forEach((item, index) => {
+        //   if (item.money.indexOf("子訂單") != -1) {
+        //     self.childernGetParentStatusHandler(item);
+        //   }
+        // });
 
         self.loading = false;
       });

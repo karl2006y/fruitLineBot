@@ -8,7 +8,6 @@ export default {
   data() {
     return {
       QRImgSrc: "",
-
       api: [],
       myInfo: false,
       loading: true
@@ -32,8 +31,21 @@ export default {
         this.getMyUnder();
 
         var url =
-          "line://app/1595482888-DRqWWNkE?recLineId=" + val + "&next=lineat";
+          "line://app/1595482888-wLxoo2K0?recLineId=" + val + "&next=lineat";
         this.makeCode(url);
+        liff
+          .sendMessages([
+            {
+              type: "text",
+              text: `我發現一個很棒的水果商，推薦給你\n${url}`
+            }
+          ])
+          .then(() => {
+            console.log("message sent");
+          })
+          .catch(err => {
+            console.log("error", err);
+          });
       }
     }
   },

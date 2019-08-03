@@ -28,10 +28,10 @@ export default {
       },
       err => {}
     );
-    // setTimeout(() => {
-    //   this.lineId = "U729a733b259f5e529339bf36b9f3da13";
-    //   this.$store.dispatch("getLineId", this.lineId);
-    // }, 1500);
+    setTimeout(() => {
+      this.lineId = "U729a733b259f5e529339bf36b9f3da13";
+      this.$store.dispatch("getLineId", this.lineId);
+    }, 1500);
   },
   updated() {
     var self = this;

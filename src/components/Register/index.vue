@@ -57,12 +57,10 @@ export default {
     };
   },
 
-  mounted() {
+  created() {
     var self = this;
     if (self.$route.query.next == "goback") {
       self.loading = false;
-    } else {
-      self.isCustomer();
     }
 
     if (self.$route.query.recLineId) {
@@ -70,6 +68,16 @@ export default {
     }
   },
   watch: {
+    lineId(val) {
+      if (val != false) {
+        var self = this;
+        if (self.$route.query.next == "goback") {
+          self.loading = false;
+        } else {
+          self.isCustomer();
+        }
+      }
+    }
     // "form.address.values": {
     //   handler(newName, oldName) {
     //     this.form.address.value = this.form.address.values
